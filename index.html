@@ -4,9 +4,247 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>T-Shirts</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f4f9fa;
+      background-image: radial-gradient(circle at top, #e4f3f5 0%, #f4f9fa 60%);
+      margin: 0;
+      padding: 50px 20px;
+      color: #1a3b3f;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #0c6478, #1597a5);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    h1::after {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: #1597a5;
+      margin: 14px auto 36px;
+      border-radius: 2px;
+    }
+
+    .store {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 28px;
+      justify-content: center;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background-color: #fff;
+      border: 1px solid #e3f1f3;
+      border-radius: 14px;
+      width: 225px;
+      padding: 18px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(12, 100, 120, 0.06);
+      transition: box-shadow 0.25s ease, transform 0.25s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 14px 28px rgba(12, 100, 120, 0.15);
+      transform: translateY(-4px);
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 14px;
+    }
+
+    .card h2 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0 0 8px;
+      color: #1a3b3f;
+    }
+
+    .price {
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(90deg, #0c6478, #1597a5);
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+    }
+
+    .stock {
+      color: #6a9aa1;
+      font-size: 12.5px;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    .out-of-stock {
+      color: #c0392b;
+      background-color: #fdecea;
+      font-weight: 600;
+      font-size: 13px;
+      margin: 14px 0 4px;
+      padding: 6px;
+      border-radius: 8px;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    select {
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1px solid #d3e9ec;
+      font-size: 13px;
+      color: #1a3b3f;
+      background-color: #f9fdfd;
+      cursor: pointer;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #1597a5;
+    }
+
+    button {
+      background: linear-gradient(90deg, #0c6478, #1597a5);
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(12, 100, 120, 0.25);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(12, 100, 120, 0.35);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body>
-  
-  
+  <h1>T-Shirts Store</h1>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone@7.19.1/babel.min.js"></script>
+
+  <script src="t-shirts.js"></script>
+
+  <script type="text/babel">
+    function TShirt (props) {
+      const tshirt = props.tshirt
+
+      function buyHandler () {
+        props.onBuy(props.index)
+      }
+
+      function quantityHandler (e) {
+        props.onQuantityChange(props.index, parseInt(e.target.value))
+      }
+
+      const options = []
+      for (let i = 1; i <= tshirt.stock; i++) {
+        options.push(<option key={i} value={i}>{i}</option>)
+      }
+
+      return (
+        <div className="card">
+          <img src={`images/${tshirt.image}`} alt={tshirt.title} />
+          <h2>{tshirt.title}</h2>
+          <p className="price">$ {tshirt.price.toFixed(2)}</p>
+
+          {tshirt.stock > 0 ? (
+            <React.Fragment>
+              <p className="stock">In Stock: {tshirt.stock}</p>
+              <div className="controls">
+                <select value={tshirt.quantity} onChange={quantityHandler}>
+                  {options}
+                </select>
+                <button onClick={buyHandler}>Buy</button>
+              </div>
+            </React.Fragment>
+          ) : (
+            <p className="out-of-stock">Out of Stock</p>
+          )}
+        </div>
+      )
+    }
+
+    function App () {
+      const [shirts, setShirts] = React.useState(tshirts)
+
+      function quantityHandler (index, value) {
+        const updated = shirts.map((shirt, i) => {
+          if (i === index) {
+            return { ...shirt, quantity: value }
+          }
+          return shirt
+        })
+        setShirts(updated)
+      }
+
+      function buyHandler (index) {
+        const updated = shirts.map((shirt, i) => {
+          if (i === index) {
+            return { ...shirt, stock: shirt.stock - shirt.quantity, quantity: 1 }
+          }
+          return shirt
+        })
+        setShirts(updated)
+      }
+
+      return (
+        <div className="store">
+          {shirts.map((shirt, index) => (
+            <TShirt
+              key={index}
+              index={index}
+              tshirt={shirt}
+              onBuy={buyHandler}
+              onQuantityChange={quantityHandler}
+            />
+          ))}
+        </div>
+      )
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'))
+    root.render(<App />)
+  </script>
 </body>
 </html>
