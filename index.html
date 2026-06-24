@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Shirt Shop</title>
+
   <style>
     * {
       box-sizing: border-box;
@@ -155,81 +156,130 @@
     }
   </style>
 </head>
+
 <body>
+
   <h1>My Shirt Shop</h1>
+
   <div id="root"></div>
 
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone@7.19.1/babel.min.js"></script>
 
   <script src="t-shirts.js"></script>
 
   <script type="text/babel">
-    function TShirt (props) {
-      const tshirt = props.tshirt
 
-      function buyHandler () {
-        props.onBuy(props.index)
+    function TShirt(props) {
+
+      const { tshirt, index, onBuy, onQuantityChange } = props
+
+      function buyHandler() {
+        onBuy(index)
       }
 
-      function quantityHandler (e) {
-        props.onQuantityChange(props.index, parseInt(e.target.value))
+      function quantityHandler(event) {
+        onQuantityChange(index, parseInt(event.target.value))
       }
 
       const options = []
+
       for (let i = 1; i <= tshirt.stock; i++) {
-        options.push(<option key={i} value={i}>{i}</option>)
+        options.push(
+          <option key={i} value={i}>
+            {i}
+          </option>
+        )
       }
 
       return (
         <div className="card">
-          <img src={`images/${tshirt.image}`} alt={tshirt.title} />
+
+          <img
+            src={`images/${tshirt.image}`}
+            alt={tshirt.title}
+          />
+
           <h2>{tshirt.title}</h2>
-          <p className="price">$ {tshirt.price.toFixed(2)}</p>
+
+          <p className="price">
+            ${tshirt.price.toFixed(2)}
+          </p>
 
           {tshirt.stock > 0 ? (
-            <React.Fragment>
-              <p className="stock">In Stock: {tshirt.stock}</p>
+            <>
+              <p className="stock">
+                In Stock: {tshirt.stock}
+              </p>
+
               <div className="controls">
-                <select value={tshirt.quantity} onChange={quantityHandler}>
+
+                <select
+                  value={tshirt.quantity}
+                  onChange={quantityHandler}
+                >
                   {options}
                 </select>
-                <button onClick={buyHandler}>Buy</button>
+
+                <button onClick={buyHandler}>
+                  Buy
+                </button>
+
               </div>
-            </React.Fragment>
+            </>
           ) : (
-            <p className="out-of-stock">Out of Stock</p>
+            <p className="out-of-stock">
+              Out of Stock
+            </p>
           )}
+
         </div>
       )
     }
 
-    function App () {
+    function App() {
+
       const [shirts, setShirts] = React.useState(tshirts)
 
-      function quantityHandler (index, value) {
-        const updated = shirts.map((shirt, i) => {
+      function quantityHandler(index, quantity) {
+
+        const updatedShirts = shirts.map((shirt, i) => {
+
           if (i === index) {
-            return { ...shirt, quantity: value }
+            return {
+              ...shirt,
+              quantity: quantity
+            }
           }
+
           return shirt
         })
-        setShirts(updated)
+
+        setShirts(updatedShirts)
       }
 
-      function buyHandler (index) {
-        const updated = shirts.map((shirt, i) => {
+      function buyHandler(index) {
+
+        const updatedShirts = shirts.map((shirt, i) => {
+
           if (i === index) {
-            return { ...shirt, stock: shirt.stock - shirt.quantity, quantity: 1 }
+            return {
+              ...shirt,
+              stock: shirt.stock - shirt.quantity,
+              quantity: 1
+            }
           }
+
           return shirt
         })
-        setShirts(updated)
+
+        setShirts(updatedShirts)
       }
 
       return (
         <div className="store">
+
           {shirts.map((shirt, index) => (
             <TShirt
               key={index}
@@ -239,12 +289,18 @@
               onQuantityChange={quantityHandler}
             />
           ))}
+
         </div>
       )
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'))
+    const root = ReactDOM.createRoot(
+      document.getElementById('root')
+    )
+
     root.render(<App />)
+
   </script>
+
 </body>
 </html>
